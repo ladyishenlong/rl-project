@@ -14,4 +14,8 @@ public interface IsoyuApi {
     @GetMapping("/helloIsoyu")
     String helloIsoyu();
 
+
+
+
+
 }
