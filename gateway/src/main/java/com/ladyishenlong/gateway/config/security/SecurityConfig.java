@@ -11,6 +11,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
@@ -29,6 +35,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    RLUserDetailsService rlUserDetailsService;
+
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
@@ -43,7 +53,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .antMatchers("/login").permitAll()
                 .antMatchers("/hello2").permitAll()
-//                .authenticationEntryPoint(new Http401AuthenticationEntryPoint("not login"))
+
+
+                //放行swagger
+                .antMatchers("/swagger-ui.html").permitAll()
+                .antMatchers("/swagger-resources/**").permitAll()
+                .antMatchers("/images/**").permitAll()
+                .antMatchers("/webjars/**").permitAll()
+                .antMatchers("/v2/api-docs").permitAll()
+                .antMatchers("/configuration/ui").permitAll()
+                .antMatchers("/configuration/security").permitAll()
+
 
                 .anyRequest()
                 .authenticated()
@@ -57,9 +77,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         String username = httpServletRequest.getParameter("username");
                         String sessionId = httpServletRequest.getSession().getId();
 
-                        log.error("登录成功----用户名："+username+"\n sessionId:"+sessionId);
+                        log.error("登录成功----用户名：" + username + "\n sessionId:" + sessionId);
 
-                        LoginBean loginBean=new LoginBean();
+                        LoginBean loginBean = new LoginBean();
                         loginBean.setMessage("登陆成功");
                         loginBean.setCode(1);
                         loginBean.setSessionId(sessionId);
@@ -92,18 +112,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
 
+
     /**
      * 验证用户名和密码
+     *
      * @param auth
      * @throws Exception
      */
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-                .passwordEncoder(new RLPassWordEncoder())
-                .withUser("123")
-                .password("123")
-                .roles("ADMIN");
+
+        auth.userDetailsService(rlUserDetailsService)
+                .passwordEncoder(new RLPassWordEncoder());
+//        auth.inMemoryAuthentication()
+//                .passwordEncoder(new RLPassWordEncoder())
+//                .withUser("123")
+//                .password("123")
+//                .roles("ADMIN");
     }
 
 
