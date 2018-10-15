@@ -1,6 +1,7 @@
 package com.ladyishenlong.gateway.controller;
 
 import com.ladyishenlong.gateway.api.NewsApi;
+import com.ladyishenlong.gateway.bean.ResponseMessage;
 import com.ladyishenlong.gateway.bean.news.detail.NewsDetailBean;
 import com.ladyishenlong.gateway.bean.news.list.NewsListBean;
 import com.ladyishenlong.gateway.bean.news.list.NewsListData;
@@ -23,15 +24,23 @@ public class NewsController {
     public NewsApi newsApi;
 
     @GetMapping("/getList")
-    public NewsListBean newsList(@RequestParam("type")String type,
-                                 @RequestParam("page")String page){
-        return newsApi.getNewsList(type,page);
+    public ResponseMessage newsList(@RequestParam("type") String type,
+                                    @RequestParam("page") String page) {
+
+        NewsListBean newsList = newsApi.getNewsList(type, page);
+
+        if (newsList.code == 1) {
+            return ResponseMessage.suceess("获取新闻列表成功", newsList.data);
+        } else {
+            return ResponseMessage.failure("获取新闻列表失败");
+        }
+
     }
 
 
     @GetMapping("/getDetail")
-    public NewsDetailBean newsDetail(@RequestParam("postid") String postid){
-        return newsApi.getNewsDetail(postid);
+    public ResponseMessage newsDetail(@RequestParam("postid") String postid) {
+        return ResponseMessage.suceess(newsApi.getNewsDetail(postid).data);
     }
 
 }

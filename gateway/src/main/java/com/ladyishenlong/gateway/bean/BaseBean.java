@@ -1,6 +1,9 @@
 package com.ladyishenlong.gateway.bean;
 
+import lombok.Data;
+
+@Data
 public class BaseBean {
-    public String msg;
+    public String message;
     public Integer code;
 }

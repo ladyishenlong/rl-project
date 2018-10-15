@@ -40,10 +40,11 @@ public class NewsController extends BaseController {
 
         String newsDetail = restTemplate
                 .getForObject(Isoyu.BASE_URL + Isoyu.NEWS_DETAILS +
-                        "?postid=CLJN5K2M000181KT", String.class);
+                        "?postid="+postid, String.class);
         gson = new Gson();
         NewsDetailBean newsDetailBean =
                 gson.fromJson(newsDetail, NewsDetailBean.class);
+
         return newsDetailBean;
     }
 

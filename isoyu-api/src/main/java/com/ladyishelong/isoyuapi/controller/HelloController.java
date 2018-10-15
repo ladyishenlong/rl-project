@@ -16,7 +16,6 @@ public class HelloController extends BaseController {
     @GetMapping("/helloIsoyu")
     public String helloIsoyu() {
 
-
         return "hello Isoyu";
     }
 
